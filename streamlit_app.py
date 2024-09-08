@@ -181,7 +181,7 @@ if st.button("Filter text messages"):
     if data_source == 'Use cleaned text from Step 1':
         if st.session_state.cleaned_texts:
             for file_name, cleaned_text in st.session_state.cleaned_texts.items():
-                st.subheader(f"Processing cleaned text from {file_name}")
+                st.subheader(f"Processed cleaned text from {file_name}")
                 
                 # Process the file content
                 result = process_messages_from_content(cleaned_text, issue_patterns, ticket_order_pattern, id_pattern)
