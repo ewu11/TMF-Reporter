@@ -156,7 +156,7 @@ ticket_order_pattern = r'\b1-\d{9,11}\b|\bT-\d{9}\b|\bt-\d{10}\b|\b1-[a-z0-9]{7}
 id_pattern = r'\bQ\d{6}\b|\bq\d{6}\b|\bTM\d{5}\b|\btm\d{5}\b'
 
 # Process the uploaded files
-if st.button("Process Files"):
+if st.button("Process Filtered Files"):
     if uploaded_files:
         for uploaded_file in uploaded_files:
             file_content = uploaded_file.read().decode("utf-8")
