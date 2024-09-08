@@ -132,7 +132,7 @@ if st.button("Clean text messages"):
         for file_name, filtered_text in results.items():
             st.session_state.cleaned_texts[file_name] = filtered_text
             st.subheader(f"Filtered content for {file_name}:")
-            st.text_area(f"Processed Content: {file_name}", filtered_text, height=300)
+            st.text_area(f"Processed Content: {file_name}", filtered_text, height=300, disabled=True)
 
         # Option to download the cleaned files
         for file_name, filtered_text in results.items():
@@ -187,7 +187,7 @@ if st.button("Filter text messages"):
                 # Prepare the result text for display
                 result_text = []
                 for issue, data in result.items():
-                    result_text.append(f"{issue}")
+                    result_text.append(f"{issue}:")
                     if issue == "Other":
                         for number, message in data:
                             result_text.append(f"{number}\n{message}")
