@@ -134,6 +134,15 @@ if st.button("Clean text messages"):
                 mime="text/plain"
             )
 
+# Inject custom CSS to change the cursor for disabled text areas
+st.markdown("""
+    <style>
+    textarea[disabled] {
+        cursor: default !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # 2. Section for "Message Processor for Text Files"
 st.header("2. Message Processor for Text Files")
 
@@ -169,10 +178,10 @@ if st.button("Filter text messages"):
                 # Prepare the result text for display
                 result_text = []
                 for issue, data in result.items():
-                    result_text.append(f"Issue: {issue}")
+                    result_text.append(f"{issue}")
                     if issue == "Other":
                         for number, message in data:
-                            result_text.append(f"Ticket/ID: {number}\nMessage: {message}")
+                            result_text.append(f"{number}\n{message}")
                     else:
                         result_text.extend([f"{number}" for number in data])
                     result_text.append("\n")  # Add a newline for separation
