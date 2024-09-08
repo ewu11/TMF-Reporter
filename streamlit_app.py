@@ -52,11 +52,11 @@ base_names_input = st.text_input(
 base_names = [name.strip() for name in base_names_input.split(",")]
 
 # File upload
-uploaded_files = st.file_uploader("Upload your text files", accept_multiple_files=True, type="txt")
+uploaded_raw_files = st.file_uploader("Upload the file containing the raw text messages", accept_multiple_files=True, type="txt")
 
-if uploaded_files:
+if uploaded_raw_files:
     # Store the uploaded files in a dictionary with file name as key and file content as value
-    input_files = {file.name: file for file in uploaded_files}
+    input_files = {file.name: file for file in uploaded_raw_files}
     
     if st.button("Process Files"):
         # Process the uploaded files with the provided base names
@@ -144,7 +144,7 @@ def process_messages_from_content(file_content, issue_patterns, ticket_order_pat
 st.title("Message Processor for Text Files")
 
 # Upload text files
-uploaded_files = st.file_uploader("Upload text files", accept_multiple_files=True, type="txt")
+uploaded_filtered_files = st.file_uploader("Upload the file containing the filtered text messages", accept_multiple_files=True, type="txt")
 
 # Define issue patterns (expandable in the future)
 issue_patterns = {
@@ -157,8 +157,8 @@ id_pattern = r'\bQ\d{6}\b|\bq\d{6}\b|\bTM\d{5}\b|\btm\d{5}\b'
 
 # Process the uploaded files
 if st.button("Process Filtered Files"):
-    if uploaded_files:
-        for uploaded_file in uploaded_files:
+    if uploaded_filtered_files:
+        for uploaded_file in uploaded_filtered_files:
             file_content = uploaded_file.read().decode("utf-8")
 
             # Process the file content
