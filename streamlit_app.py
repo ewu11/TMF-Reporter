@@ -1,6 +1,15 @@
 import streamlit as st
 import re
 
+# Inject custom CSS to change the cursor for disabled text areas
+st.markdown("""
+    <style>
+    textarea[disabled] {
+        cursor: default !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Function to process the uploaded files for text file processing with regex filtering
 def filter_messages(input_files, base_names):
     timestamp_pattern = re.compile(r'\[\d{2}:\d{2}, \d{1,2}/\d{1,2}/\d{4}\]|^\[\d{1,2}/\d{1,2}/\d{4} \d{1,2}:\d{2} [APM]{2}]')
