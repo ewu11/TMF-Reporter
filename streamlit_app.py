@@ -39,13 +39,16 @@ def filter_messages(input_files, base_names):
     return results
 
 
+
+st.title("TMF Daily Report Generator")
+
 # Streamlit app: Section for "Text File Processor with Regex Filtering"
-st.title("Text File Processor with Regex Filtering")
+st.header("1. Text File Processor with Regex Filtering")
 
 # Input section for base names
 base_names_input = st.text_input(
-    "Enter base names (comma-separated)", 
-    "Hartina, Tina, Normah, Pom, Afizan, Pijan, Ariff, Dheffirdaus, Dhef, Hazrina, Rina, Nurul, Huda, Zazarida, Zaza, Eliasaph Wan, Wan"
+    "Enter base names (comma-separated) -- These names are to be removed after filteration", 
+    "Hartina, Tina, Normah, Pom, Afizan, Pijan, Ariff, Dheffirdaus, Dhef, Hazrina, Rina, Nurul, Huda, Zazarida, Zaza, Eliasaph Wan, Wan, ] : "
 )
 base_names = [name.strip() for name in base_names_input.split(",")]
 
@@ -53,7 +56,7 @@ base_names = [name.strip() for name in base_names_input.split(",")]
 uploaded_raw_files = st.file_uploader("Upload the file containing the raw text messages", accept_multiple_files=True, type="txt")
 
 # Button for processing raw files with regex filtering
-if st.button("Process Files with Regex Filtering"):
+if st.button("Clean text messages"):
     if uploaded_raw_files:
         # Store the uploaded files in a dictionary with file name as key and file content as value
         input_files = {file.name: file for file in uploaded_raw_files}
@@ -79,7 +82,7 @@ if st.button("Process Files with Regex Filtering"):
 # --------------------------------------------------
 
 # Section for "Message Processor for Text Files"
-st.title("Message Processor for Text Files")
+st.header("2. Message Processor for Text Files")
 
 # File upload for filtered text messages
 uploaded_filtered_files = st.file_uploader("Upload the file containing the filtered text messages", accept_multiple_files=True, type="txt")
@@ -94,7 +97,7 @@ ticket_order_pattern = r'\b1-\d{9,11}\b|\bT-\d{9}\b|\bt-\d{10}\b|\b1-[a-z0-9]{7}
 id_pattern = r'\bQ\d{6}\b|\bq\d{6}\b|\bTM\d{5}\b|\btm\d{5}\b'
 
 # Button for processing filtered text messages
-if st.button("Process Filtered Text Files"):
+if st.button("Filter text messages"):
     if uploaded_filtered_files:
         for uploaded_file in uploaded_filtered_files:
             file_content = uploaded_file.read().decode("utf-8")
