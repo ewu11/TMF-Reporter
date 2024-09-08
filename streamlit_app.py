@@ -134,7 +134,6 @@ if st.button("Clean text messages"):
                 mime="text/plain"
             )
 
-
 # 2. Section for "Message Processor for Text Files"
 st.header("2. Message Processor for Text Files")
 
@@ -167,21 +166,27 @@ if st.button("Filter text messages"):
                 # Process the file content
                 result = process_messages_from_content(cleaned_text, issue_patterns, ticket_order_pattern, id_pattern)
 
-                # Display the result
+                # Prepare the result text for display
+                result_text = []
                 for issue, data in result.items():
-                    st.subheader(f"Issue: {issue}")
+                    result_text.append(f"Issue: {issue}")
                     if issue == "Other":
                         for number, message in data:
-                            st.write(f"{number}: {message}")
+                            result_text.append(f"Ticket/ID: {number}\nMessage: {message}")
                     else:
-                        for number in data:
-                            st.write(number)
+                        result_text.extend([f"{number}" for number in data])
+                    result_text.append("\n")  # Add a newline for separation
+
+                # Join the result text into a single string
+                display_text = "\n".join(result_text)
+
+                # Display the result in a read-only text area
+                st.text_area(f"Results for {file_name}", value=display_text, height=300, disabled=True)
 
                 # Option to download the result as a text file
-                result_text = "\n".join([f"{issue}: {', '.join([str(item) for item in data])}" for issue, data in result.items()])
                 st.download_button(
                     label="Download Results",
-                    data=result_text,
+                    data=display_text,
                     file_name=f"processed_{file_name}",
                     mime="text/plain"
                 )
@@ -197,23 +202,30 @@ if st.button("Filter text messages"):
                 # Process the file content
                 result = process_messages_from_content(file_content, issue_patterns, ticket_order_pattern, id_pattern)
 
-                # Display the result
+                # Prepare the result text for display
+                result_text = []
                 for issue, data in result.items():
-                    st.subheader(f"Issue: {issue}")
+                    result_text.append(f"Issue: {issue}")
                     if issue == "Other":
                         for number, message in data:
-                            st.write(f"{number}: {message}")
+                            result_text.append(f"Ticket/ID: {number}\nMessage: {message}")
                     else:
-                        for number in data:
-                            st.write(number)
+                        result_text.extend([f"{number}" for number in data])
+                    result_text.append("\n")  # Add a newline for separation
+
+                # Join the result text into a single string
+                display_text = "\n".join(result_text)
+
+                # Display the result in a read-only text area
+                st.text_area(f"Results for {uploaded_file.name}", value=display_text, height=300, disabled=True)
 
                 # Option to download the result as a text file
-                result_text = "\n".join([f"{issue}: {', '.join([str(item) for item in data])}" for issue, data in result.items()])
                 st.download_button(
                     label="Download Results",
-                    data=result_text,
+                    data=display_text,
                     file_name=f"processed_{uploaded_file.name}",
                     mime="text/plain"
                 )
         else:
             st.warning("Please upload at least one text file to process.")
+
