@@ -142,7 +142,9 @@ if st.button("Clean text messages"):
                 file_name=f"cleaned_{file_name}",
                 mime="text/plain"
             )
-
+    else:
+        st.warning("Please upload at least one text file to process.")
+            
 # Inject custom CSS to change the cursor for disabled text areas
 st.markdown("""
     <style>
