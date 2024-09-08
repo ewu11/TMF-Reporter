@@ -153,7 +153,7 @@ id_pattern = r'\bQ\d{6}\b|\bq\d{6}\b|\bTM\d{5}\b|\btm\d{5}\b'
 # Dropdown to select between cleaned text from previous step or uploaded file
 data_source = st.radio(
     "Choose the source for filtering:",
-    ('Use cleaned text from Step 1', 'Upload a new filtered file')
+    ('Use cleaned text from Step 1', 'Upload a new filtered file(s)')
 )
 
 # Button for processing filtered text messages
