@@ -51,7 +51,7 @@ def filter_messages(input_files, base_names):
 # Function to process the text file input
 def process_messages_from_content(file_content, issue_patterns, ticket_order_pattern, id_pattern):
     # Split content into individual messages based on the pattern of new blocks
-    messages = re.split(r'\n(?=\[\d{1,2}/\d{1,2}/\d{4} \d{1,2}:\d{2} (?:am|pm)\])|\[\d{2}:\d{2}, \d{1,2}/\d{1,2}/\d{4}\]', file_content)
+    messages = re.split(r'\n(?=\[\d{1,2}/\d{1,2}/\d{4} \d{1,2} (?:am|pm)\])|\[\d{2}:\d{2}, \d{1,2}/\d{1,2}/\d{4}\]', file_content)
     
     result = {
         "Full Capping": [],
@@ -166,8 +166,13 @@ data_source = st.radio(
     ('Use cleaned text from Step 1', 'Upload a new filtered file(s)')
 )
 
+# Option to display results separately or combined
+combine_output = st.checkbox("Show combined output for all files")
+
 # Button for processing filtered text messages
 if st.button("Filter text messages"):
+    combined_text = []  # To hold combined output if needed
+
     # If using cleaned text from Step 1
     if data_source == 'Use cleaned text from Step 1':
         if st.session_state.cleaned_texts:
@@ -191,16 +196,21 @@ if st.button("Filter text messages"):
                 # Join the result text into a single string
                 display_text = "\n".join(result_text)
 
-                # Display the result in a read-only text area with normal cursor
-                st.text_area(f"Results for {file_name}", value=display_text, height=300, disabled=True)
+                # If combining, store the result
+                if combine_output:
+                    combined_text.append(display_text)
+                else:
+                    # Display the result in a read-only text area with normal cursor
+                    st.text_area(f"Results for {file_name}", value=display_text, height=300, disabled=True)
 
-                # Option to download the result as a text file
-                st.download_button(
-                    label="Download Results",
-                    data=display_text,
-                    file_name=f"processed_{file_name}",
-                    mime="text/plain"
-                )
+                    # Option to download the result as a text file
+                    st.download_button(
+                        label="Download Results",
+                        data=display_text,
+                        file_name=f"processed_{file_name}",
+                        mime="text/plain"
+                    )
+
         else:
             st.warning("No cleaned text available from Step 1. Please process the files first.")
 
@@ -219,14 +229,14 @@ if st.button("Filter text messages"):
                     result_text.append(f"Issue: {issue}")
                     if issue == "Other":
                         for number, message in data:
-                            result_text.append(f"Ticket/ID: {number}\nMessage: {message}")
-                    else:
-                        result_text.extend([f"{number}" for number in data])
-                    result_text.append("\n")  # Add a newline for separation
+                            result_text.append(f"Ticket/ID: {number}\nMessage: {message}") else: result_text.extend([f"{number}" for number in data]) result_text.append("\n") # Add a newline for separation
+            # Join the result text into a single string
+            display_text = "\n".join(result_text)
 
-                # Join the result text into a single string
-                display_text = "\n".join(result_text)
-
+            # If combining, store the result
+            if combine_output:
+                combined_text.append(display_text)
+            else:
                 # Display the result in a read-only text area with normal cursor
                 st.text_area(f"Results for {uploaded_file.name}", value=display_text, height=300, disabled=True)
 
@@ -237,5 +247,17 @@ if st.button("Filter text messages"):
                     file_name=f"processed_{uploaded_file.name}",
                     mime="text/plain"
                 )
-        else:
-            st.warning("Please upload at least one text file to process.")
+    else:
+        st.warning("Please upload at least one text file to process.")
+
+# If combined output is selected, display combined result
+if combine_output and combined_text:
+    combined_result = "\n".join(combined_text)
+    st.subheader("Combined cleaned text")
+    st.text_area("Combined Processed Content", value=combined_result, height=400, disabled=True)
+    st.download_button(
+        label="Download Combined Results",
+        data=combined_result,
+        file_name="combined_processed_result.txt",
+        mime="text/plain"
+    )
