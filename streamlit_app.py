@@ -135,21 +135,27 @@ id_pattern = r'\bQ\d{6}\b|\bq\d{6}\b|\bTM\d{5}\b|\btm\d{5}\b'
 data_source = st.radio("Choose the source for filtering:", ('Use cleaned text from Step 1', 'Upload a new filtered file(s)'))
 combine_output = st.checkbox("Combine output from all files into one view")
 
+# Ensure the correct structure of result before formatting individual results
 if st.button("Filter text messages"):
     combined_result_by_issue = {"Full Capping": [], "Other": []}
 
     if data_source == 'Use cleaned text from Step 1':
         if st.session_state.cleaned_texts:
             for file_name, cleaned_text in st.session_state.cleaned_texts.items():
+                # Process messages and get structured result
                 result = process_messages_from_content(cleaned_text, issue_patterns, ticket_order_pattern, id_pattern)
 
                 if combine_output:
                     for issue, data in result.items():
                         combined_result_by_issue[issue].extend(data)
                 else:
-                    result_text = format_individual_results(result)
-                    st.text_area(f"Results for {file_name}", value=result_text, height=300, disabled=True)
-                    st.download_button(label="Download Results", data=result_text, file_name=f"processed_{file_name}", mime="text/plain")
+                    # Ensure result has correct structure before passing to format function
+                    if result and isinstance(result, dict):  # Check result is not None and is a dictionary
+                        result_text = format_individual_results(result)
+                        st.text_area(f"Results for {file_name}", value=result_text, height=300, disabled=True)
+                        st.download_button(label="Download Results", data=result_text, file_name=f"processed_{file_name}", mime="text/plain")
+                    else:
+                        st.warning(f"Result structure is invalid for {file_name}.")
         else:
             st.warning("No cleaned text available from Step 1. Please process the files first.")
 
