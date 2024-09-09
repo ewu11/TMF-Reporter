@@ -177,17 +177,24 @@ if st.button("Filter text messages"):
         st.download_button(label="Download Combined Results", data=combined_text, file_name="combined_processed_result.txt", mime="text/plain")
 
 # Function to format individual results
+# Function to format individual results (per file)
 def format_individual_results(result):
-    result_text = []
+    individual_text = []
+    
     for issue, data in result.items():
-        result_text.append(f"Issue: {issue}")
+        individual_text.append(f"Issue: {issue}")
+        
         if issue == "Other":
+            # For "Other" issue, show each ticket/ID along with its corresponding message
             for number, message in data:
-                result_text.append(f"Ticket/ID: {number}\nMessage: {message}")
+                individual_text.append(f"Ticket/ID: {number}\nMessage: {message}")
         else:
-            result_text.extend([f"{number}" for number in data])
-        result_text.append("\n")
-    return "\n".join(result_text)
+            # For other issues, list the IDs or ticket numbers
+            individual_text.extend([f"{number}" for number in data])
+        
+        individual_text.append("\n")  # Add a new line after each issue block
+    
+    return "\n".join(individual_text)
 
 # Function to format combined results grouped by issue
 # Function to format combined results grouped by issue
