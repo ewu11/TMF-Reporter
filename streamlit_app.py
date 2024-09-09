@@ -195,8 +195,8 @@ def format_combined_results(combined_result_by_issue):
     for issue, data in combined_result_by_issue.items():
         combined_text.append(f"Issue: {issue}")
         if issue == "Other": 
-        for number, message in data: 
-            combined_text.append(f"Ticket/ID: {number}\nMessage: {message}") 
+            for number, message in data: 
+                combined_text.append(f"Ticket/ID: {number}\nMessage: {message}") 
         else: 
             combined_text.extend([f"{number}" for number in data]) 
             combined_text.append("\n")
