@@ -237,38 +237,5 @@ if st.button("Filter text messages"):
                     file_name=f"processed_{uploaded_file.name}",
                     mime="text/plain"
                 )
-
         else:
             st.warning("Please upload at least one text file to process.")
-
-            else: #Show results separately for each file
-                for file_name, cleaned_text in st.session_state.cleaned_texts.items():
-                    st.subheader(f"Processing cleaned text from {file_name}")
-
-                    # Process the file content
-                    result = process_messages_from_content(cleaned_text, issue_patterns, ticket_order_pattern, id_pattern)
-
-                    # Prepare the result text for display
-                    # result_text = []
-                    # for issue, data in result.items():
-                    #     result_text.append(f"{issue}:")
-                    #     if issue == "Other":
-                    #         for number, message in data:
-                    #             result_text.append(f"{number}\n{message}")
-                    #     else:
-                    #         result_text.extend([f"{number}" for number in data])
-                    #     result_text
-                    # Prepare the result text for display
-                    result_text = []
-                    for issue, data in result.items():
-                        result_text.append(f"{issue}:")
-                        if issue == "Other":
-                            for number, message in data:
-                                result_text.append(f"{number}\n{message}")
-                        else:
-                            result_text.extend([f"{number}" for number in data])
-
-                         #result_text.append("\n")  # Add a newline for separation
-
-                         #result_text
-
