@@ -1,2 +1,2 @@
 streamlit
-chardet==5.2.0
+#chardet==5.2.0
