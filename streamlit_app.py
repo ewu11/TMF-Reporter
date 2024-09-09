@@ -190,14 +190,22 @@ def format_individual_results(result):
     return "\n".join(result_text)
 
 # Function to format combined results grouped by issue
+# Function to format combined results grouped by issue
 def format_combined_results(combined_result_by_issue):
     combined_text = []
+    
     for issue, data in combined_result_by_issue.items():
         combined_text.append(f"Issue: {issue}")
-        if issue == "Other": 
-            for number, message in data: 
-                combined_text.append(f"Ticket/ID: {number}\nMessage: {message}") 
-        else: 
-            combined_text.extend([f"{number}" for number in data]) 
-            combined_text.append("\n")
+        
+        if issue == "Other":
+            # For "Other" issue, show each ticket/ID along with its corresponding message
+            for number, message in data:
+                combined_text.append(f"Ticket/ID: {number}\nMessage: {message}")
+        else:
+            # For issues like "Full Capping", just list the IDs or ticket numbers
+            combined_text.extend([f"{number}" for number in data])
+        
+        combined_text.append("\n")  # Add a new line after each issue
+        
     return "\n".join(combined_text)
+
