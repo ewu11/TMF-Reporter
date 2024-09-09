@@ -178,8 +178,9 @@ if st.button("Filter text messages"):
         if st.session_state.cleaned_texts:
             if output_format == 'Show all results in one text area':
                 combined_results = []
+                st.subheader(f"Combined processed cleaned text from {file_name}")
                 for file_name, cleaned_text in st.session_state.cleaned_texts.items():
-                    st.subheader(f"Processing cleaned text from {file_name}")
+                    # st.subheader(f"Processing cleaned text from {file_name}")
                     
                     # Process the file content
                     result = process_messages_from_content(cleaned_text, issue_patterns, ticket_order_pattern, id_pattern)
@@ -238,12 +239,3 @@ if st.button("Filter text messages"):
                         else:
                             result_text.extend([f"{number}" for number in data])
                         result_text.append("\n")  # Add a newline for separation
-
-                    # Join the result text into a single string
-                    combined_results.append("\n".join(result_text))
-
-                    # Join all results into a single text area
-                    display_text = "\n\n".join(combined_results)
-    
-                    # Display the result in a read-only text area
-                    st.text_area("Results", value=display_text, height=600, disabled=True)
