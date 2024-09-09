@@ -178,8 +178,9 @@ if st.button("Filter text messages"):
         if st.session_state.cleaned_texts:
             if output_format == 'Show all results in one text area':
                 combined_results = []
+                st.subheader(f"Combined processed cleaned text from {file_name}")
                 for file_name, cleaned_text in st.session_state.cleaned_texts.items():
-                    st.subheader(f"Processing cleaned text from {file_name}")
+                    # st.subheader(f"Processing cleaned text from {file_name}")
                     
                     # Process the file content
                     result = process_messages_from_content(cleaned_text, issue_patterns, ticket_order_pattern, id_pattern)
@@ -211,13 +212,23 @@ if st.button("Filter text messages"):
                     file_name="combined_processed_results.txt",
                     mime="text/plain"
                 )
-            else:
+            else: #Show results separately for each file
                 for file_name, cleaned_text in st.session_state.cleaned_texts.items():
                     st.subheader(f"Processing cleaned text from {file_name}")
 
                     # Process the file content
                     result = process_messages_from_content(cleaned_text, issue_patterns, ticket_order_pattern, id_pattern)
 
+                    # Prepare the result text for display
+                    # result_text = []
+                    # for issue, data in result.items():
+                    #     result_text.append(f"{issue}:")
+                    #     if issue == "Other":
+                    #         for number, message in data:
+                    #             result_text.append(f"{number}\n{message}")
+                    #     else:
+                    #         result_text.extend([f"{number}" for number in data])
+                    #     result_text
                     # Prepare the result text for display
                     result_text = []
                     for issue, data in result.items():
@@ -227,4 +238,7 @@ if st.button("Filter text messages"):
                                 result_text.append(f"{number}\n{message}")
                         else:
                             result_text.extend([f"{number}" for number in data])
-                        result_text
+
+                         result_text.append("\n")  # Add a newline for separation
+
+                         result_text
