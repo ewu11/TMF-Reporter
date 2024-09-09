@@ -1,7 +1,7 @@
 import streamlit as st
 import re
 import codecs
-import chardet
+# import chardet
 
 # Inject custom CSS to change the cursor for disabled text areas
 st.markdown("""
