@@ -47,11 +47,9 @@ def filter_messages(input_files, base_names):
 
     return results
 
-
-# Function to process the text file input
+# Function to process the text file input and categorize issues
 def process_messages_from_content(file_content, issue_patterns, ticket_order_pattern, id_pattern):
-    # Split content into individual messages based on the pattern of new blocks
-    messages = re.split(r'\n(?=\[\d{1,2}/\d{1,2}/\d{4} \d{1,2} (?:am|pm)\])|\[\d{2}:\d{2}, \d{1,2}/\d{1,2}/\d{4}\]', file_content)
+    messages = re.split(r'\n(?=\[\d{1,2}/\d{1,2}/\d{4} \d{1,2}:\d{2} (?:am|pm)\])|\[\d{2}:\d{2}, \d{1,2}/\d{1,2}/\d{4}\]', file_content)
     
     result = {
         "Full Capping": [],
@@ -61,11 +59,9 @@ def process_messages_from_content(file_content, issue_patterns, ticket_order_pat
     added_tickets = set()
     added_ids = set()
 
-    # Process each message block
     for message in messages:
         found_issue = False
 
-        # Check for issues and collect tickets/IDs
         for issue, pattern in issue_patterns.items():
             if re.search(pattern, message, re.IGNORECASE):
                 tickets = re.findall(ticket_order_pattern, message)
@@ -103,164 +99,105 @@ def process_messages_from_content(file_content, issue_patterns, ticket_order_pat
 # Streamlit app
 st.title("TMF Daily Report Generator")
 
-# 1. Section for "Text File Processor with Regex Filtering"
+# Section 1: Text File Processor with Regex Filtering
 st.header("1. Text File Processor with Regex Filtering")
-
-# Input section for base names
-base_names_input = st.text_input(
-    "Enter base names (comma-separated) -- These names are to be removed after filtering", 
-    "Hartina, Tina, Normah, Pom, Afizan, Pijan, Ariff, Dheffirdaus, Dhef, Hazrina, Rina, Nurul, Huda, Zazarida, Zaza, Eliasaph Wan, Wan, ] : "
-)
+base_names_input = st.text_input("Enter base names (comma-separated) -- These names are to be removed after filtering", "Hartina, Tina, Normah, Pom, Afizan, Pijan, Ariff, Dheffirdaus, Dhef, Hazrina, Rina, Nurul, Huda, Zazarida, Zaza, Eliasaph Wan, Wan, ] : ")
 base_names = [name.strip() for name in base_names_input.split(",")]
 
-# File upload for raw text files
 uploaded_raw_files = st.file_uploader("Upload the file(s) containing the raw text messages", accept_multiple_files=True, type="txt")
 
-# Session state to store cleaned text
 if 'cleaned_texts' not in st.session_state:
     st.session_state.cleaned_texts = {}
 
-# Button for processing raw files with regex filtering
 if st.button("Clean text messages"):
     if uploaded_raw_files:
         input_files = {file.name: file for file in uploaded_raw_files}
-        
-        # Process the uploaded files with the provided base names
         results = filter_messages(input_files, base_names)
 
-        # Display and store the cleaned texts in session state
         for file_name, filtered_text in results.items():
             st.session_state.cleaned_texts[file_name] = filtered_text
             st.subheader(f"Filtered content for {file_name}:")
             st.text_area(f"Processed Content: {file_name}", filtered_text, height=300, disabled=True)
 
-        # Option to download the cleaned files
         for file_name, filtered_text in results.items():
-            st.download_button(
-                label=f"Download cleaned {file_name}",
-                data=filtered_text,
-                file_name=f"cleaned_{file_name}",
-                mime="text/plain"
-            )
+            st.download_button(label=f"Download cleaned {file_name}", data=filtered_text, file_name=f"cleaned_{file_name}", mime="text/plain")
     else:
         st.warning("Please upload at least one text file to process.")
 
-# 2. Section for "Message Processor for Text Files"
+# Section 2: Message Processor for Text Files
 st.header("2. Message Processor for Text Files")
-
-# File upload for filtered text messages
 uploaded_filtered_files = st.file_uploader("Upload the file(s) containing the filtered text messages", accept_multiple_files=True, type="txt", key="filtered_uploader")
 
-# Define issue patterns
-issue_patterns = {
-    "Full Capping": r'\bfull cap[p]?ing\b'
-}
-
-# Ticket/order and ID patterns
+issue_patterns = {"Full Capping": r'\bfull cap[p]?ing\b'}
 ticket_order_pattern = r'\b1-\d{9,11}\b|\bT-\d{9}\b|\bt-\d{10}\b|\b1-[a-z0-9]{7}\b|\binc\b'
 id_pattern = r'\bQ\d{6}\b|\bq\d{6}\b|\bTM\d{5}\b|\btm\d{5}\b'
 
-# Dropdown to select between cleaned text from previous step or uploaded file
-data_source = st.radio(
-    "Choose the source for filtering:",
-    ('Use cleaned text from Step 1', 'Upload a new filtered file(s)')
-)
+data_source = st.radio("Choose the source for filtering:", ('Use cleaned text from Step 1', 'Upload a new filtered file(s)'))
+combine_output = st.checkbox("Combine output from all files into one view")
 
-# Option to display results separately or combined
-combine_output = st.checkbox("Show combined output for all files")
-
-# Button for processing filtered text messages
 if st.button("Filter text messages"):
-    combined_text = []  # To hold combined output if needed
+    combined_result_by_issue = {"Full Capping": [], "Other": []}
 
-    # If using cleaned text from Step 1
     if data_source == 'Use cleaned text from Step 1':
         if st.session_state.cleaned_texts:
             for file_name, cleaned_text in st.session_state.cleaned_texts.items():
-                st.subheader(f"Processing cleaned text from {file_name}")
-                
-                # Process the file content
                 result = process_messages_from_content(cleaned_text, issue_patterns, ticket_order_pattern, id_pattern)
 
-                # Prepare the result text for display
-                result_text = []
-                for issue, data in result.items():
-                    result_text.append(f"Issue: {issue}")
-                    if issue == "Other":
-                        for number, message in data:
-                            result_text.append(f"Ticket/ID: {number}\nMessage: {message}")
-                    else:
-                        result_text.extend([f"{number}" for number in data])
-                    result_text.append("\n")  # Add a newline for separation
-
-                # Join the result text into a single string
-                display_text = "\n".join(result_text)
-
-                # If combining, store the result
                 if combine_output:
-                    combined_text.append(display_text)
+                    for issue, data in result.items():
+                        combined_result_by_issue[issue].extend(data)
                 else:
-                    # Display the result in a read-only text area with normal cursor
-                    st.text_area(f"Results for {file_name}", value=display_text, height=300, disabled=True)
-
-                    # Option to download the result as a text file
-                    st.download_button(
-                        label="Download Results",
-                        data=display_text,
-                        file_name=f"processed_{file_name}",
-                        mime="text/plain"
-                    )
-
+                    result_text = format_individual_results(result)
+                    st.text_area(f"Results for {file_name}", value=result_text, height=300, disabled=True)
+                    st.download_button(label="Download Results", data=result_text, file_name=f"processed_{file_name}", mime="text/plain")
         else:
             st.warning("No cleaned text available from Step 1. Please process the files first.")
 
-    # If using a newly uploaded filtered file
     elif data_source == 'Upload a new filtered file':
         if uploaded_filtered_files:
             for uploaded_file in uploaded_filtered_files:
                 file_content = uploaded_file.read().decode("utf-8")
-
-                # Process the file content
                 result = process_messages_from_content(file_content, issue_patterns, ticket_order_pattern, id_pattern)
 
-                # Prepare the result text for display
-                result_text = []
-                for issue, data in result.items():
-                    result_text.append(f"Issue: {issue}")
-                    if issue == "Other":
-                        for number, message in data:
-                            result_text.append(f"Ticket/ID: {number}\nMessage: {message}") 
-                    else: 
-                        result_text.extend([f"{number}" for number in data]) 
-                        result_text.append("\n") # Add a newline for separation
-            # Join the result text into a single string
-            display_text = "\n".join(result_text)
+                if combine_output:
+                    for issue, data in result.items():
+                        combined_result_by_issue[issue].extend(data)
+                else:
+                    result_text = format_individual_results(result)
+                    st.text_area(f"Results for {uploaded_file.name}", value=result_text, height=300, disabled=True)
+                    st.download_button(label="Download Results", data=result_text, file_name=f"processed_{uploaded_file.name}", mime="text/plain")
+        else:
+            st.warning("Please upload at least one text file to process.")
+    
+    # Show combined output if requested
+    if combine_output:
+        combined_text = format_combined_results(combined_result_by_issue)
+        st.subheader("Combined cleaned text")
+        st.text_area("Combined Processed Content", value=combined_text, height=400, disabled=True)
+        st.download_button(label="Download Combined Results", data=combined_text, file_name="combined_processed_result.txt", mime="text/plain")
 
-            # If combining, store the result
-            if combine_output:
-                combined_text.append(display_text)
-            else:
-                # Display the result in a read-only text area with normal cursor
-                st.text_area(f"Results for {uploaded_file.name}", value=display_text, height=300, disabled=True)
+# Function to format individual results
+def format_individual_results(result):
+    result_text = []
+    for issue, data in result.items():
+        result_text.append(f"Issue: {issue}")
+        if issue == "Other":
+            for number, message in data:
+                result_text.append(f"Ticket/ID: {number}\nMessage: {message}")
+        else:
+            result_text.extend([f"{number}" for number in data])
+        result_text.append("\n")
+    return "\n".join(result_text)
 
-                # Option to download the result as a text file
-                st.download_button(
-                    label="Download Results",
-                    data=display_text,
-                    file_name=f"processed_{uploaded_file.name}",
-                    mime="text/plain"
-                )
-    else:
-        st.warning("Please upload at least one text file to process.")
-
-# If combined output is selected, display combined result
-if combine_output and combined_text:
-    combined_result = "\n".join(combined_text)
-    st.subheader("Combined cleaned text")
-    st.text_area("Combined Processed Content", value=combined_result, height=400, disabled=True)
-    st.download_button(
-        label="Download Combined Results",
-        data=combined_result,
-        file_name="combined_processed_result.txt",
-        mime="text/plain"
-    )
+# Function to format combined results grouped by issue
+def format_combined_results(combined_result_by_issue):
+    combined_text = []
+    for issue, data in combined_result_by_issue.items():
+        combined_text.append(f"Issue: {issue}")
+        if issue == "Other": 
+        for number, message in data: 
+            combined_text.append(f"Ticket/ID: {number}\nMessage: {message}") 
+        else: 
+            combined_text.extend([f"{number}" for number in data]) 
+            combined_text.append("\n")
+    return "\n".join(combined_text)
