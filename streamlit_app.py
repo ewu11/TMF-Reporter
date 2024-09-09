@@ -1,7 +1,7 @@
 import streamlit as st
 import re
 import codecs
-import chardet
+# import chardet
 
 # Inject custom CSS to change the cursor for disabled text areas
 st.markdown("""
@@ -12,29 +12,6 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-
-# Function to detect file encoding using chardet and convert it to UTF-8
-def detect_and_convert_to_utf8(file_data):
-    raw_data = file_data.read()
-    
-    # Detect the encoding using chardet
-    detected = chardet.detect(raw_data)
-    encoding = detected['encoding']
-    
-    if encoding is None:
-        st.warning("Could not detect the encoding. Assuming UTF-8.")
-        encoding = 'utf-8'
-    
-    # Convert to UTF-8 using the detected encoding
-    try:
-        text_data = raw_data.decode(encoding)
-    except UnicodeDecodeError:
-        st.error(f"Failed to decode the file using detected encoding: {encoding}.")
-        return None
-
-    return text_data
-
-
 # Function to process the uploaded files for text file processing with regex filtering
 def filter_messages(input_files, base_names):
     timestamp_pattern = re.compile(r'\[\d{2}:\d{2}, \d{1,2}/\d{1,2}/\d{4}\]|^\[\d{1,2}/\d{1,2}/\d{4} \d{1,2}:\d{2} [APM]{2}]')
@@ -42,12 +19,7 @@ def filter_messages(input_files, base_names):
 
     results = {}
     
-    for file_name, file_data in input_files.items():
-        # Detect and convert to UTF-8
-        file_content = detect_and_convert_to_utf8(file_data)
-        if file_content is None:
-            continue  # Skip file if conversion fails
-        
+    for file_name in input_files.items():
         lines = file_content.splitlines()
 
         filtered_lines = []
@@ -353,7 +325,8 @@ elif data_source == 'Upload a new filtered file':
         if output_format == 'Show all results in one text area':
             combined_results = []
             for uploaded_file in uploaded_filtered_files:
-                file_content = uploaded_file.read().decode("utf-8")
+                # file_content = uploaded_file.read().decode("utf-8")
+                file_content = uploaded_file.read()
 
                 # Process the file content
                 result = process_messages_from_content(file_content, issue_patterns, ticket_order_pattern, id_pattern)
@@ -387,7 +360,8 @@ elif data_source == 'Upload a new filtered file':
             )
         else:
             for uploaded_file in uploaded_filtered_files:
-                file_content = uploaded_file.read().decode("utf-8")
+                # file_content = uploaded_file.read().decode("utf-8")
+                file_content = uploaded_file.read()
 
                 # Process the file content
                 result = process_messages_from_content(file_content, issue_patterns, ticket_order_pattern, id_pattern)
