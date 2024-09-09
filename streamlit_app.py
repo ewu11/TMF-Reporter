@@ -325,8 +325,8 @@ elif data_source == 'Upload a new filtered file':
         if output_format == 'Show all results in one text area':
             combined_results = []
             for uploaded_file in uploaded_filtered_files:
-                # file_content = uploaded_file.read().decode("utf-8")
-                file_content = uploaded_file.read()
+                file_content = uploaded_file.read().decode("utf-8")
+                # file_content = uploaded_file.read()
 
                 # Process the file content
                 result = process_messages_from_content(file_content, issue_patterns, ticket_order_pattern, id_pattern)
@@ -360,8 +360,8 @@ elif data_source == 'Upload a new filtered file':
             )
         else:
             for uploaded_file in uploaded_filtered_files:
-                # file_content = uploaded_file.read().decode("utf-8")
-                file_content = uploaded_file.read()
+                file_content = uploaded_file.read().decode("utf-8")
+                # file_content = uploaded_file.read()
 
                 # Process the file content
                 result = process_messages_from_content(file_content, issue_patterns, ticket_order_pattern, id_pattern)
