@@ -230,7 +230,8 @@ if st.button("Filter text messages"):
                     if issue == "Other":
                         for number, message in data:
                             result_text.append(f"Ticket/ID: {number}\nMessage: {message}") 
-                    else: result_text.extend([f"{number}" for number in data]) result_text.append("\n") # Add a newline for separation
+                    else: result_text.extend([f"{number}" for number in data]) 
+                        result_text.append("\n") # Add a newline for separation
             # Join the result text into a single string
             display_text = "\n".join(result_text)
 
