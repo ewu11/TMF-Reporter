@@ -20,7 +20,7 @@ def filter_messages(input_files, base_names):
     results = {}
     
     for file_name in input_files.items():
-        lines = file_content.splitlines()
+        # lines = file_content.splitlines()
 
         filtered_lines = []
         skip_block = False
