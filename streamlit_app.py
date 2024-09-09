@@ -238,4 +238,7 @@ if st.button("Filter text messages"):
                                 result_text.append(f"{number}\n{message}")
                         else:
                             result_text.extend([f"{number}" for number in data])
-                        result_text.append("\n")  # Add a newline for separation
+
+                         result_text.append("\n")  # Add a newline for separation
+
+                         result_text
